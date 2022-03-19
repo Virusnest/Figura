@@ -280,6 +280,7 @@ public class FiguraMod implements ClientModInitializer {
 
     public final static List<UUID> VIP = List.of(
             UUID.fromString("aa0e3391-e497-4e8e-8afe-b69dfaa46afa"), //salad
+            UUID.fromString("005da2a8-31d9-401e-9604-78ac318e1939"), //virusnest
             UUID.fromString("da53c608-d17c-4759-94fe-a0317ed63876"), //zandra
             UUID.fromString("66a6c5c4-963b-4b73-a0d9-162faedd8b7f"), //fran
             UUID.fromString("45361fcf-f188-46de-ae96-43d89afd6658"), //money
