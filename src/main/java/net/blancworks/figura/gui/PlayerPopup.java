@@ -1,5 +1,7 @@
 package net.blancworks.figura.gui;
 
+import net.blancworks.figura.parsers.FiguraAvatarSerializer;
+import net.minecraft.entity.player.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.blancworks.figura.FiguraMod;
 import net.blancworks.figura.avatar.AvatarData;
@@ -23,9 +25,24 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
+import net.minecraft.world.World;
+import net.minecraft.nbt.NbtCompound;
+
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class PlayerPopup extends DrawableHelper {
 
@@ -45,7 +62,8 @@ public class PlayerPopup extends DrawableHelper {
             new TranslatableText("figura.playerpopup.reload"),
             new TranslatableText("figura.playerpopup.increasetrust"),
             new TranslatableText("figura.playerpopup.decreasetrust"),
-            new TranslatableText("figura.playerpopup.trustmenu")
+            new TranslatableText("figura.playerpopup.trustmenu"),
+            new TranslatableText("figura.playerpopup.save")
     );
 
     private static final Text TRUST_TEXT = new LiteralText("").append(new LiteralText("! ").setStyle(Style.EMPTY.withFont(FiguraMod.FIGURA_FONT))).append(new TranslatableText("figura.playerpopup.trustissue"));
@@ -132,15 +150,15 @@ public class PlayerPopup extends DrawableHelper {
 
         //background
         RenderSystem.setShaderTexture(0, POPUP_TEXTURE);
-        drawTexture(matrices, -45, -30, 90, 30, 0f, 0f, 90, 30, 90, 96);
+        drawTexture(matrices, -45, -30, 108, 30, 0f, 0f, 108, 30, 108, 96);
 
         RenderSystem.setShaderColor(((color >> 16) & 0xFF) / 255f, ((color >>  8) & 0xFF) / 255f, (color & 0xFF) / 255f, 1f);
-        drawTexture(matrices, -45, -30, 90, 30, 0f, 30f, 90, 30, 90, 96);
+        drawTexture(matrices, -45, -30, 108, 30, 0f, 30f, 108, 30, 108, 96);
 
         //icons
         matrices.translate(0f, 0f, -2f);
         for (int i = 0; i < BUTTONS.size(); i++) {
-            drawTexture(matrices, -45 + (18 * i), -23, 18, 18, 18f * i, i == index ? 78f : 60f, 18, 18, 90, 96);
+            drawTexture(matrices, -45 + (18 * i), -23, 18, 18, 18f * i, i == index ? 78f : 60f, 18, 18, 108, 96);
         }
 
         //playername
@@ -207,8 +225,19 @@ public class PlayerPopup extends DrawableHelper {
                     if (entry != null)
                         TRUST_SCREEN.playerList.select(entry);
                 }
+                case 5 -> {
+                    FiguraMod.sendToast(playerName, "figura.toast.avatar.save.title");
+                    AvatarData avadat = AvatarDataManager.getDataForPlayer(data.entityId);
+                    NbtCompound nbt = new NbtCompound();
+                    data.writeNbt(nbt);
+                    FiguraAvatarSerializer.serialize(nbt);
+
+
+                }
             }
         }
+
+        
 
         enabled = false;
         miniEnabled = false;
@@ -216,4 +245,5 @@ public class PlayerPopup extends DrawableHelper {
         index = 0;
         data = null;
     }
+
 }
